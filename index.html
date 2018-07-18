@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My first Vue app</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="format-detection" content="telephone=no" />
+  <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+  <link href="css/main.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+  <div class="top-bar">
+    <div class="top-btn">
+      <span class="btn-item cur">前端</span>
+      <span class="btn-item">拓展资源</span>
+      <span class="btn-item">Android</span>
+      <span class="btn-item">IOS</span>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="ct-item"></div>
+  </div>
+
+  <script>
+    var mydata;
+    var strHtml = "";
+    $().ready(function() {
+      $.getJSON("http://gank.io/api/data/Android/10/1",function(data){  
+        mydata = data.results; 
+        if (mydata.length > 0) {
+          for( var i = 0; i<mydata.length;i++ ) {
+            strHtml += "描述：" + mydata[i].desc + "<br>";  
+            strHtml += "类别：" + mydata[i].type + "<br>";  
+            strHtml += "链接：" + mydata[i].url + "<br>";  
+            strHtml += "<hr>"  
+          }
+          $(".ct-item").html(strHtml);
+        }
+      });   
+    });
+  </script>
+</body>
+</html>

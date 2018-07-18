@@ -1,0 +1,48 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 62.5%;
+}
+
+.top-bar {
+    width: 100%;
+    position: relative;
+    background: #607d8b;
+    padding-top: 3rem;    
+}
+.top-btn {
+    width: 100%;
+    height: 3rem;
+    position: relative;
+}
+.btn-item {
+    width: 25%;
+    height: 3rem;
+    font-size: 1.8rem;
+    line-height: 3rem;
+    color: #efefef;
+    position: relative;
+    float: left;
+    text-align: center;
+}
+
+.btn-item.cur {
+    border-bottom: 0.2rem solid #03a9f4;
+}
+
+.content {
+    width: 100%;
+    position: relative;
+}
+.ct-item {
+    width: 100%;
+    height: 3rem;
+    position: relative;
+    margin: 1rem 0;
+    float: left;
+    border-radius: 0.5rem;
+    box-shadow: 0.2rem 0.2rem 0.2rem #23232350;
+}
