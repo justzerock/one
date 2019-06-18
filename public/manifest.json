@@ -1,6 +1,6 @@
 {
-  "name": "zerock",
-  "short_name": "zerock",
+  "name": "亦言",
+  "short_name": "亦言",
   "icons": [
     {
       "src": "./img/icons/android-chrome-192x192.png",
@@ -15,6 +15,6 @@
   ],
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#3D787B",
-  "theme_color": "#4DBA87"
+  "background_color": "#009688",
+  "theme_color": "#00897B"
 }

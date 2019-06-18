@@ -1,24 +1,26 @@
 import Vue from 'vue'
 import Vuetify from 'vuetify/lib'
 import 'vuetify/src/stylus/app.styl'
+import colors from 'vuetify/es5/util/colors'
 import zhHans from 'vuetify/es5/locale/zh-Hans'
+import en from 'vuetify/es5/locale/en'
 
 Vue.use(Vuetify, {
   theme: {
-    primary: '#ee44aa',
-    secondary: '#424242',
-    accent: '#82B1FF',
-    error: '#FF5252',
-    info: '#2196F3',
-    success: '#4CAF50',
-    warning: '#FFC107'
+    primary: colors.teal.base,
+    secondary: colors.orange.base,
+    accent: colors.blue.base,
+    error: colors.red.base,
+    warning: colors.amber.base,
+    info: colors.cyan.base,
+    success: colors.green.base
   },
   options: {
     customProperties: true
   },
   iconfont: 'fa',
   lang: {
-    locales: { zhHans },
+    locales: { zhHans, en },
     current: 'zh-Hans'
-  },
+  }
 })
