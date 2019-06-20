@@ -45,10 +45,14 @@
                 v-bind:hitoType="hitos.type|hitokotos"
               ></zero-card>
               <v-layout row wrap justify-end>
-                <v-btn icon color="primary" disabled>
+                <v-btn icon color="primary" 
+                  :disabled="btnPrev"
+                >
                   <v-icon>fas fa-chevron-circle-left</v-icon>
                 </v-btn>
-                <v-btn icon color="primary">
+                <v-btn icon color="primary"
+                  :disabled="btnNext"
+                >
                   <v-icon>fas fa-chevron-circle-right</v-icon>
                 </v-btn>
               </v-layout>
@@ -112,7 +116,10 @@ export default {
       copyTip: '',  //  复制·提示语
       tipColor: '', //  提示消息 ·颜色
       hitos: {},  //  一言内容
+      curIndex: 0,  //  当前索引
       type: ['a','b','c','d','e','f','g'],  //  一言类型
+      btnPrev: true,
+      btnNext: false,
       //
     }
   },
@@ -143,6 +150,9 @@ export default {
   localStorage: {
     hitokotos: {
       type: Array
+    },
+    curIndex: {
+      type: Number
     }
   },
   methods: {
@@ -178,6 +188,8 @@ export default {
     switchHitokoto (value) {
       let _this = this
       let hitokotos = _this.$localStorage.get('hitokotos')
+      let curIndex = _this.$localStorage.get('curIndex')
+
     } 
   },
   mounted () {
@@ -194,8 +206,10 @@ export default {
           hitokotos.push(res)
           _this.$localStorage.set('hitokotos', hitokotos)
           console.log(res)
-          if (i===0) {
+          if (i === 0) {
             _this.hitos = _this.$localStorage.get('hitokotos')[0]
+            _this.curIndex = 0
+            _this.$localStorage.set('curIndex', 0)
             _this.$data.loading = false
           }
         })
