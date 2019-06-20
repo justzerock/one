@@ -28,7 +28,9 @@
         v-if="loading"
       >fas fa-circle-notch fa-spin</v-icon>
       <v-spacer></v-spacer>
-      <v-btn icon>
+      <v-btn icon
+        @click="addFavorite(hitos.id)"
+      >
         <v-icon>favorite</v-icon>
       </v-btn>
     </v-toolbar>
@@ -45,10 +47,17 @@
                 v-bind:hitoType="hitos.type|hitokotos"
               ></zero-card>
               <v-layout row wrap justify-end>
-                <v-btn icon color="primary" disabled>
+                <v-btn icon color="primary" 
+                  :disabled="btnPrev"
+                  @click="switchHitokoto('prev')"
+                >
                   <v-icon>fas fa-chevron-circle-left</v-icon>
                 </v-btn>
-                <v-btn icon color="primary">
+                <v-btn icon color="primary"
+                  :disabled="btnNext"
+                  @click="switchHitokoto('next')"
+                  :loading="loading"
+                >
                   <v-icon>fas fa-chevron-circle-right</v-icon>
                 </v-btn>
               </v-layout>
@@ -113,6 +122,9 @@ export default {
       tipColor: '', //  提示消息 ·颜色
       hitos: {},  //  一言内容
       type: ['a','b','c','d','e','f','g'],  //  一言类型
+      btnPrev: true,
+      btnNext: false,
+      favorites: [],
       //
     }
   },
@@ -143,6 +155,12 @@ export default {
   localStorage: {
     hitokotos: {
       type: Array
+    },
+    curIndex: {
+      type: Number
+    },
+    favorites: {
+      type: Array
     }
   },
   methods: {
@@ -164,20 +182,64 @@ export default {
         _this.$data.tipColor = "error"
       })
     },
+    addFavorite (id) {
+      let _this = this
+      let favorites = _this.$localStorage.get('favorites', [])
+      // favorites = favorites === 'novalue' ? [] : favorites
+      let hitos = _this.$data.hitos
+      favorites.push(hitos)
+      _this.$localStorage.set('favorites', favorites)
+    },
     getHitokoto () {
       let _this = this
       let hitokotos = _this.$localStorage.get('hitokotos')
+      let curIndex = _this.$localStorage.get('curIndex') - 1
       _this.$data.loading = true
       api.get('https://v1.hitokoto.cn/')
         .then((res) => {
+          if ( hitokotos.length > 6 ) {
+            hitokotos.splice(0,1)
+            _this.$localStorage.set('curIndex', curIndex)
+          }
           hitokotos.push(res)
           _this.$localStorage.set('hitokotos', hitokotos)
           _this.$data.loading = false
         })
     },
+    getManyHitokoto () {
+      let _this = this
+      let hitokotos = _this.$localStorage.get('hitokotos')
+      let curIndex = _this.$localStorage.get('curIndex')
+      if (hitokotos.length > 0) {
+        _this.$data.hitos = hitokotos[curIndex]
+        _this.$data.btnPrev = curIndex === 0 ? true : false 
+        _this.$data.loading = false
+      } else {
+        let types = _this.$data.type
+        for (let i=0; i<types.length; i++) {
+          api.get('https://v1.hitokoto.cn/', { params: { c: types[i] }} )
+            .then((res) => {
+              //_this.hitos = res
+              hitokotos.push(res)
+              _this.$localStorage.set('hitokotos', hitokotos)
+              if (i === 0) {
+                _this.$data.hitos = _this.$localStorage.get('hitokotos')[0]
+                _this.$localStorage.set('curIndex', 0)
+                _this.$data.loading = false
+              }
+            })
+        }
+      }
+    },
     switchHitokoto (value) {
       let _this = this
       let hitokotos = _this.$localStorage.get('hitokotos')
+      let curIndex = _this.$localStorage.get('curIndex')
+      value === 'prev' ? curIndex-- : curIndex++
+      _this.$localStorage.set('curIndex', curIndex)
+      _this.$data.hitos = hitokotos[curIndex]
+      _this.$data.btnPrev = curIndex === 0 ? true : false 
+      value === 'next' && curIndex > 5 ? _this.getHitokoto() : ''
     } 
   },
   mounted () {
@@ -185,21 +247,7 @@ export default {
     let themeTimer = setInterval(function() {
       _this.changeTheme()
     }, 1000)
-    let hitokotos = []
-    let types = _this.$data.type
-    for (let i=0; i<types.length; i++) {
-      api.get('https://v1.hitokoto.cn/', { params: { c: types[i] }} )
-        .then((res) => {
-          //_this.hitos = res
-          hitokotos.push(res)
-          _this.$localStorage.set('hitokotos', hitokotos)
-          console.log(res)
-          if (i===0) {
-            _this.hitos = _this.$localStorage.get('hitokotos')[0]
-            _this.$data.loading = false
-          }
-        })
-    }
+    _this.getManyHitokoto()
   }
 }
 </script>
