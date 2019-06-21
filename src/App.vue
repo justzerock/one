@@ -121,6 +121,7 @@ export default {
       copyTip: '',  //  复制·提示语
       tipColor: '', //  提示消息 ·颜色
       hitos: {},  //  一言内容
+      curIndex: 0,  //  当前索引
       type: ['a','b','c','d','e','f','g'],  //  一言类型
       btnPrev: true,
       btnNext: false,
