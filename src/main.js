@@ -3,7 +3,6 @@ import './plugins/vuetify'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import './utils/setThemeColor'
 import './registerServiceWorker'
 import 'normalize.css'
 import 'material-design-icons-iconfont'
@@ -12,8 +11,17 @@ import '@fortawesome/fontawesome-free/css/all.css'
 import './plugins/clipboard'
 import './plugins/axios'
 import './plugins/localStorage'
+import './plugins/myTitle'
 
 Vue.config.productionTip = false
+
+router.beforeEach((to, from, next) => {
+  /* 路由发生变化修改页面title */
+  if (to.meta.title) {
+    document.title = to.meta.title
+  }
+  next()
+})
 
 new Vue({
   router,

@@ -2,7 +2,7 @@
   <v-card
     class="mx-auto"
     light
-    ripple
+    v-ripple="{ class: 'pink--text text--darken-4' }"
     hover
   >
     <v-card-text class="subheading pt-5 pb-4 px-5" >
@@ -43,6 +43,11 @@ export default {
     hitoType: {
       type: String,
       default: 'GOT'
+    }
+  },
+  methods: {
+    clickCard () {
+      
     }
   }
 }

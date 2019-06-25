@@ -17,7 +17,7 @@
       <v-list-tile
         v-for="item in items"
         :key="item.title"
-        @click=" "
+        :to="item.to"
       >
         <v-list-tile-action>
           <v-icon color="primary">{{ item.icon }}</v-icon>
@@ -39,8 +39,9 @@ export default {
     return {
       zero: 'Hitokoto',
       items: [
-        { title: 'Home', icon: 'dashboard' },
-        { title: 'About', icon: 'question_answer' }
+        { title: '亦言', icon: 'home', to: '/' },
+        { title: '收藏', icon: 'favorite', to: '/favorite' },
+        { title: '关于', icon: 'info', to: '/about' }
       ]
     }
   }
