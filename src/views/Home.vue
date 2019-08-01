@@ -1,13 +1,8 @@
 <template>
   <v-layout align-content-start justify-center column fill-height>
     <v-layout row wrap justify-center align-content-center>
-      <v-flex xs12 sm10 lg8>
-        <zero-card
-          class="zero-card"
-          v-bind:hitoContent="hitos.hitokoto"
-          v-bind:hitoFrom="hitos.from"
-          v-bind:hitoType="hitos.type|hitokotos"
-        ></zero-card>
+      <swiper/>
+      <v-flex xs10 lg8>
         <v-layout row wrap justify-end>
           <v-btn icon color="primary" :disabled="btnPrev" @click="switchHitokoto('prev')">
             <v-icon>fas fa-chevron-circle-left</v-icon>
@@ -48,7 +43,7 @@
 </template>
 
 <script>
-import ZeroCard from "../components/ZeroCard";
+import Swiper from "../components/Swiper";
 import { formatDate } from "../utils/formatDate";
 import { api } from "../utils/axios";
 
@@ -70,7 +65,7 @@ export default {
     };
   },
   components: {
-    ZeroCard
+    Swiper
   },
   filters: {
     hitokotos(value) {

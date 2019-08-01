@@ -29,8 +29,8 @@
       </v-btn>
     </v-toolbar>
     <v-content>
-      <v-container fluid fill-height 
-      class="primary v-container">
+      <v-container fluid fill-height
+      class="primary v-container pa-0">
         <router-view></router-view>
       </v-container>
     </v-content>
@@ -80,7 +80,6 @@ export default {
   },
   mounted () {
     let _this = this
-    console.log(_this.$myTitle)
     let themeTimer = setInterval(function() {
       _this.changeTheme()
     }, 1000)
