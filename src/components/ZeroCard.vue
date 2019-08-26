@@ -10,7 +10,7 @@
       class="subheading pt-5 pb-4 px-5" 
       style="width:inherit"
     >
-      {{hitoContent}}
+      {{hitokoto}}
     </v-card-text>
 
     <v-card-actions class="text-xs-center">
@@ -19,13 +19,13 @@
           <v-avatar>
             <v-icon>account_circle</v-icon>
           </v-avatar>
-          {{hitoFrom}}
+          {{from}}
         </v-chip>
         <v-chip color="secondary" text-color="white">
           <v-avatar class="secondary darken-1">
             <v-icon>star</v-icon>
           </v-avatar>
-          {{hitoType}}
+          {{type|hitoFilter}}
         </v-chip>
       </v-layout>
     </v-card-actions>
@@ -39,15 +39,15 @@ let lastTime = 0
 let clickTimer
 export default {
   props: {
-    hitoContent: {
+    hitokoto: {
       type: String,
       default: '凡人皆有一死。'
     },
-    hitoFrom: {
+    from: {
       type: String,
       default: '无面者'
     },
-    hitoType: {
+    type: {
       type: String,
       default: 'GOT'
     }
@@ -58,6 +58,26 @@ export default {
       colorIndex: 0
     }
   },
+  filters: {
+    hitoFilter(value) {
+      switch (value) {
+        case "a":
+          return "动画";
+        case "b":
+          return "漫画";
+        case "c":
+          return "游戏";
+        case "d":
+          return "小说";
+        case "e":
+          return "原创";
+        case "f":
+          return "网络";
+        default:
+          return "其他";
+      }
+    }
+  },
   methods: {
     clickCard () {
       let date = new Date()
@@ -65,7 +85,7 @@ export default {
       if ( nowTime - lastTime < 400 ) {
         lastTime = 0
         clickTimer && clearTimeout(clickTimer) 
-        console.log(this.$props.hitoContent)
+        console.log(this.$props.hitokoto)
       } else {
         lastTime = nowTime
         clickTimer = setTimeout(() => {

@@ -1,10 +1,19 @@
 <template>
   <v-layout align-content-start justify-center column fill-height>
     <v-layout row wrap justify-center align-content-center>
-      <swiper/>
+      <swiper
+        v-bind:hitokotos="hitokotos"
+        ref="swiper"
+        @activeIndex="switcherSync"
+      />
       <v-flex xs10 lg8>
         <v-layout row wrap justify-end>
-          <v-btn icon color="primary" :disabled="btnPrev" @click="switchHitokoto('prev')">
+          <v-btn 
+            icon 
+            color="primary" 
+            :disabled="btnPrev" 
+            @click="switchHitokoto('prev')"
+            >
             <v-icon>fas fa-chevron-circle-left</v-icon>
           </v-btn>
           <v-btn
@@ -13,8 +22,8 @@
             :disabled="btnNext"
             @click="switchHitokoto('next')"
             :loading="loading"
-          >
-            <v-icon>fas fa-chevron-circle-right</v-icon>
+            >
+            <v-icon>fas {{faRight}}</v-icon>
           </v-btn>
         </v-layout>
       </v-flex>
@@ -46,6 +55,8 @@
 import Swiper from "../components/Swiper";
 import { formatDate } from "../utils/formatDate";
 import { api } from "../utils/axios";
+import { truncate } from 'fs';
+import { setTimeout } from 'timers';
 
 export default {
   data() {
@@ -56,48 +67,30 @@ export default {
       timeout: 1500, //  提示消息·消失时长
       copyTip: "", //  复制·提示语
       tipColor: "", //  提示消息 ·颜色
-      hitos: {}, //  一言内容
+      hitokotos: [], //  一言内容
       curIndex: 0, //  当前索引
       type: ["a", "b", "c", "d", "e", "f", "g"], //  一言类型
       btnPrev: true,
       btnNext: false,
+      faRight: 'fa-chevron-circle-right', // fa-spinner fa-spin
       favorites: []
     };
   },
   components: {
     Swiper
   },
-  filters: {
-    hitokotos(value) {
-      switch (value) {
-        case "a":
-          return "动画";
-        case "b":
-          return "漫画";
-        case "c":
-          return "游戏";
-        case "d":
-          return "小说";
-        case "e":
-          return "原创";
-        case "f":
-          return "网络";
-        default:
-          return "其他";
-      }
-    }
-  },
-  localStorage: {
-    hitokotos: {
-      type: Array
-    },
-    curIndex: {
-      type: Number
-    }
-  },
   computed: {
     getTimeHex() {
       return this.$vuetify.theme.primary
+    },
+    getHitokotos() {
+      return this.$store.getters.getHitokotos
+    },
+    getFavorites() {
+      return this.$store.getters.getFavorites
+    },
+    getCurIndex() {
+      return this.$store.getters.getCurIndex
     }
   },
   methods: {
@@ -117,73 +110,81 @@ export default {
       );
     },
     addFavorite(id) {
-      let _this = this;
-      let favorites = _this.$localStorage.get("favorites", []);
+      let _this = this
+      let favorites = _this.getFavorites
       // favorites = favorites === 'novalue' ? [] : favorites
-      let hitos = _this.$data.hitos;
-      favorites.push(hitos);
-      _this.$localStorage.set("favorites", favorites);
+      let hitokotos = _this.$data.hitokotos
+      let curIndex = _this.$data.curIndex
+      favorites.push(hitokotos[curIndex])
+      _this.$store.commit('setFavorites', favorites)
     },
     getHitokoto() {
-      let _this = this;
-      let hitokotos = _this.$localStorage.get("hitokotos");
-      let curIndex = _this.$localStorage.get("curIndex") - 1;
-      _this.$data.loading = true;
+      let _this = this
+      let hitokotos = _this.getHitokotos
+      let curIndex = _this.getCurIndex - 1
+      _this.$data.loading = true
       api.get("https://v1.hitokoto.cn/").then(res => {
-        if (hitokotos.length > 6) {
-          hitokotos.splice(0, 1);
-          _this.$localStorage.set("curIndex", curIndex);
+        if (hitokotos.length > 10) {
+          hitokotos.splice(0, 1)
+          _this.$store.commit('setCurIndex', curIndex)
         }
-        hitokotos.push(res);
-        _this.$localStorage.set("hitokotos", hitokotos);
-        _this.$data.loading = false;
+        hitokotos.push(res)
+        _this.$store.commit('setHitokotos', hitokotos)
+        _this.$data.loading = false
       });
     },
     getManyHitokoto() {
-      let _this = this;
-      let hitokotos = _this.$localStorage.get("hitokotos");
-      let curIndex = _this.$localStorage.get("curIndex");
+      let _this = this
+      let hitokotos = _this.getHitokotos
+      let curIndex = _this.getCurIndex
       if (hitokotos.length > 0) {
-        _this.$data.hitos = hitokotos[curIndex];
-        _this.$data.btnPrev = curIndex === 0 ? true : false;
-        _this.$data.loading = false;
+        _this.$data.hitokotos = hitokotos
+        _this.$data.btnPrev = curIndex === 0 ? true : false
+        _this.$data.loading = false
       } else {
-        let types = _this.$data.type;
+        let types = _this.$data.type
         for (let i = 0; i < types.length; i++) {
           api
             .get("https://v1.hitokoto.cn/", { params: { c: types[i] } })
             .then(res => {
-              //_this.hitos = res
-              hitokotos.push(res);
-              _this.$localStorage.set("hitokotos", hitokotos);
+              //_this.hitokotos = res
+              hitokotos.push(res)
+              _this.$store.commit('setHitokotos', hitokotos)
               if (i === 0) {
-                _this.$data.hitos = _this.$localStorage.get("hitokotos")[0];
-                _this.$localStorage.set("curIndex", 0);
-                _this.$data.loading = false;
+                _this.$data.hitokotos = _this.getHitokotos
+                _this.$store.commit('setCurIndex', 0)
+                _this.$data.loading = false
               }
-            });
+            })
         }
       }
     },
     switchHitokoto(value) {
-      let _this = this;
-      let hitokotos = _this.$localStorage.get("hitokotos");
-      let curIndex = _this.$localStorage.get("curIndex");
-      value === "prev" ? curIndex-- : curIndex++;
-      _this.$localStorage.set("curIndex", curIndex);
-      _this.$data.hitos = hitokotos[curIndex];
-      _this.$data.btnPrev = curIndex === 0 ? true : false;
-      value === "next" && curIndex > 5 ? _this.getHitokoto() : "";
+      let _this = this
+      //let hitokotos = _this.getHitokotos
+      let curIndex = _this.getCurIndex
+      value === "prev" ? curIndex-- : curIndex++
+      _this.$refs.swiper.slideTo(curIndex)
+      _this.$store.commit('setCurIndex', curIndex)
+      //_this.$data.hitokotos = hitokotos
+      _this.$data.btnPrev = curIndex === 0 ? true : false
+      //value === "next" && curIndex > 5 ? _this.getHitokoto() : ""
+      if ( value === 'next' && curIndex > 5 ) {
+        setTimeout(function() {
+          _this.getHitokoto()
+        }, 1000)
+      }
+    },
+    switcherSync(activeIndex) {
+      this.$data.btnPrev = activeIndex == 0 ? true : false
+      this.$store.commit('setCurIndex', activeIndex)
+      console.log('emit:'+ activeIndex)
     }
   },
   mounted() {
-    let _this = this;
-    /* let themeTimer = setInterval(function() {
-      _this.$data.timeHex = _this.$vuetify.theme.primary
-    }, 1000); */
+    let _this = this
     _this.$myTitle = '亦言'
-    console.log(_this.$myTitle)
-    _this.getManyHitokoto();
+    _this.getManyHitokoto()
   }
 };
 </script>

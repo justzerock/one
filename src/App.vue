@@ -57,11 +57,6 @@ export default {
   components: {
     ZeroDrawerList
   },
-  localStorage: {
-    favorites: {
-      type: Array
-    }
-  },
   methods: {
     changeTheme () {
       let _this = this
@@ -69,13 +64,14 @@ export default {
       _this.$vuetify.theme.primary = primary
       setThemeColor(primary)
     },
-    addFavorite () {
+    addFavorite() {
       let _this = this
-      let favorites = _this.$localStorage.get('favorites', [])
+      let favorites = _this.getFavorites
       // favorites = favorites === 'novalue' ? [] : favorites
-      let hitos = _this.$localStorage.get('hitokotos',[])[_this.$localStorage.get('curIndex', 0)]
-      favorites.push(hitos)
-      _this.$localStorage.set('favorites', favorites)
+      let hitokotos = _this.$data.hitokotos
+      let curIndex = _this.$data.curIndex
+      favorites.push(hitokotos[curIndex])
+      _this.$store.commit('setFavorites', favorites)
     },
   },
   mounted () {
