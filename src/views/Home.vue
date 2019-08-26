@@ -176,9 +176,16 @@ export default {
       }
     },
     switcherSync(activeIndex) {
-      this.$data.btnPrev = activeIndex == 0 ? true : false
-      this.$store.commit('setCurIndex', activeIndex)
-      console.log('emit:'+ activeIndex)
+      let _this = this
+      let curIndex = _this.getCurIndex
+      let next = activeIndex > curIndex ? true : false
+      _this.$data.btnPrev = activeIndex == 0 ? true : false
+      _this.$store.commit('setCurIndex', activeIndex)
+      if ( next && activeIndex > 5 ) {
+        setTimeout(function() {
+          _this.getHitokoto()
+        }, 1000)
+      }
     }
   },
   mounted() {
