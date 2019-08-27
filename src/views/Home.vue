@@ -1,26 +1,16 @@
 <template>
   <v-layout align-content-start justify-center column fill-height>
     <v-layout row wrap justify-center align-content-center>
-      <swiper
-        v-bind:hitokotos="hitokotos"
-        ref="swiper"
-        @activeIndex="switcherSync"
-      />
       <v-flex xs10 lg8>
+        <zero-card
+          v-bind:hitokoto="hitokotos"
+        />
         <v-layout row wrap justify-end>
-          <v-btn 
-            icon 
-            color="primary" 
-            :disabled="btnPrev" 
-            @click="switchHitokoto('prev')"
-            >
-            <v-icon>fas fa-chevron-circle-left</v-icon>
-          </v-btn>
           <v-btn
             icon
             color="primary"
             :disabled="btnNext"
-            @click="switchHitokoto('next')"
+            @click="getHitokoto('refresh')"
             :loading="loading"
             >
             <v-icon>fas {{faRight}}</v-icon>
@@ -52,11 +42,11 @@
 </template>
 
 <script>
-import Swiper from "../components/Swiper";
-import { formatDate } from "../utils/formatDate";
-import { api } from "../utils/axios";
-import { truncate } from 'fs';
-import { setTimeout } from 'timers';
+import ZeroCard from "../components/ZeroCard"
+import { formatDate } from "../utils/formatDate"
+import { api } from "../utils/axios"
+import { truncate } from 'fs'
+import { setTimeout } from 'timers'
 
 export default {
   data() {
@@ -67,17 +57,17 @@ export default {
       timeout: 1500, //  提示消息·消失时长
       copyTip: "", //  复制·提示语
       tipColor: "", //  提示消息 ·颜色
-      hitokotos: [], //  一言内容
+      hitokotos: {}, //  一言内容
       curIndex: 0, //  当前索引
       type: ["a", "b", "c", "d", "e", "f", "g"], //  一言类型
       btnPrev: true,
       btnNext: false,
-      faRight: 'fa-chevron-circle-right', // fa-spinner fa-spin
+      faRight: 'fa-circle-notch', // fa-spinner fa-spin
       favorites: []
     };
   },
   components: {
-    Swiper
+    ZeroCard
   },
   computed: {
     getTimeHex() {
@@ -118,20 +108,21 @@ export default {
       favorites.push(hitokotos[curIndex])
       _this.$store.commit('setFavorites', favorites)
     },
-    getHitokoto() {
+    getHitokoto(opt) {
       let _this = this
       let hitokotos = _this.getHitokotos
-      let curIndex = _this.getCurIndex - 1
-      _this.$data.loading = true
-      api.get("https://v1.hitokoto.cn/").then(res => {
-        if (hitokotos.length > 10) {
-          hitokotos.splice(0, 1)
-          _this.$store.commit('setCurIndex', curIndex)
-        }
-        hitokotos.push(res)
-        _this.$store.commit('setHitokotos', hitokotos)
+      if (Object.keys(hitokotos).length === 0 || opt === 'refresh') {
+        _this.$data.loading = true
+        api.get("https://v1.hitokoto.cn/").then(res => {
+          hitokotos = res
+          _this.$data.hitokotos = hitokotos
+          _this.$store.commit('setHitokotos', hitokotos)
+          _this.$data.loading = false
+        })
+      } else {
+        _this.$data.hitokotos = hitokotos
         _this.$data.loading = false
-      });
+      }
     },
     getManyHitokoto() {
       let _this = this
@@ -184,7 +175,7 @@ export default {
   mounted() {
     let _this = this
     _this.$myTitle = '亦言'
-    _this.getManyHitokoto()
+    _this.getHitokoto('start')
   }
 };
 </script>

@@ -1,16 +1,17 @@
 <template>
   <v-card
-    class="mx-auto"
+    class="mx-auto zero-card"
     light
     v-ripple="{ class: `${colors[colorIndex]}--text text--accent-4` }"
     hover
     @click="clickCard"
+    ref="zeroCard"
   >
     <v-card-text 
       class="subheading pt-5 pb-4 px-5" 
       style="width:inherit"
     >
-      {{hitokoto}}
+      {{hitokoto.hitokoto}}
     </v-card-text>
 
     <v-card-actions class="text-xs-center">
@@ -19,13 +20,13 @@
           <v-avatar>
             <v-icon>account_circle</v-icon>
           </v-avatar>
-          {{from}}
+          {{hitokoto.from}}
         </v-chip>
         <v-chip color="secondary" text-color="white">
           <v-avatar class="secondary darken-1">
             <v-icon>star</v-icon>
           </v-avatar>
-          {{type|hitoFilter}}
+          {{hitokoto.type|hitoFilter}}
         </v-chip>
       </v-layout>
     </v-card-actions>
@@ -40,16 +41,7 @@ let clickTimer
 export default {
   props: {
     hitokoto: {
-      type: String,
-      default: '凡人皆有一死。'
-    },
-    from: {
-      type: String,
-      default: '无面者'
-    },
-    type: {
-      type: String,
-      default: 'GOT'
+      type: Object
     }
   },
   data () {
@@ -79,13 +71,12 @@ export default {
     }
   },
   methods: {
-    clickCard () {
+    clickCard() {
       let date = new Date()
       let nowTime = date.getTime()
       if ( nowTime - lastTime < 400 ) {
         lastTime = 0
         clickTimer && clearTimeout(clickTimer) 
-        console.log(this.$props.hitokoto)
       } else {
         lastTime = nowTime
         clickTimer = setTimeout(() => {
@@ -94,7 +85,20 @@ export default {
           this.$data.colorIndex = index
           }, 400)
       }
+    },
+    onResize() {
+      console.log(this.$refs.zeroCard.style.height)
     }
+  },
+  mounted() {
+      console.log(this.$refs.zeroCard.style.height)
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+.zero-card
+  min-height 100px
+  max-height 300px
+  transition all .5s
+</style>

@@ -8,7 +8,7 @@ const hitos = [{id: 543, hitokoto: "我秃了，我也变强了", type: "a", fro
 
 export default new Vuex.Store({
   state: {
-    hitokotos: [],
+    hitokotos: {},
     curIndex: 0,
     favorites: []
   },
