@@ -5,39 +5,22 @@
         <zero-card
           v-bind:hitokoto="hitokotos"
         />
-        <v-layout row wrap justify-end>
-          <v-btn
-            icon
-            color="primary"
-            :disabled="btnNext"
-            @click="getHitokoto('refresh')"
-            :loading="loading"
-            >
-            <v-icon>fas {{faRight}}</v-icon>
-          </v-btn>
-        </v-layout>
       </v-flex>
     </v-layout>
-    <v-layout class="primary" justify-center align-end>
-      <v-btn small icon color="primary" @click="expand = !expand">
-        <v-icon>info</v-icon>
+    <div class="btn-box">
+      <v-btn
+        class="btn-load"
+        icon
+        color="primary"
+        x-large
+        :loading="loading"
+        @click="getHitokoto('load')"
+        >
+        <v-icon 
+          x-large
+        >fas fa-circle-notch</v-icon>
       </v-btn>
-
-      <v-flex shrink>
-        <v-expand-x-transition>
-          <div v-show="expand" style="white-space: nowrap; border-radius:28px ">
-            <v-chip @click="copyHex">
-              当前背景色：
-              <span class="primary--text">{{getTimeHex}}</span>
-            </v-chip>
-          </div>
-        </v-expand-x-transition>
-      </v-flex>
-      <v-snackbar v-model="snackbar" bottom multi-line :timeout="timeout" :color="tipColor">
-        {{ copyTip }}
-        <v-btn flat @click="snackbar = false">Close</v-btn>
-      </v-snackbar>
-    </v-layout>
+    </div>
   </v-layout>
 </template>
 
@@ -58,11 +41,7 @@ export default {
       copyTip: "", //  复制·提示语
       tipColor: "", //  提示消息 ·颜色
       hitokotos: {}, //  一言内容
-      curIndex: 0, //  当前索引
       type: ["a", "b", "c", "d", "e", "f", "g"], //  一言类型
-      btnPrev: true,
-      btnNext: false,
-      faRight: 'fa-circle-notch', // fa-spinner fa-spin
       favorites: []
     };
   },
@@ -111,13 +90,28 @@ export default {
     getHitokoto(opt) {
       let _this = this
       let hitokotos = _this.getHitokotos
-      if (Object.keys(hitokotos).length === 0 || opt === 'refresh') {
+      let zeroCard = document.getElementsByClassName('zero-card')[0]
+      let zeroCardStyle = document.getElementsByClassName('zero-card')[0].style
+      let oldHeight = zeroCard.clientHeight
+      zeroCardStyle.transition = 'none'
+      zeroCardStyle.height = 'auto'
+      if (Object.keys(hitokotos).length === 0 || opt === 'load') {
         _this.$data.loading = true
         api.get("https://v1.hitokoto.cn/").then(res => {
           hitokotos = res
           _this.$data.hitokotos = hitokotos
           _this.$store.commit('setHitokotos', hitokotos)
-          _this.$data.loading = false
+          _this.$nextTick(()=> {
+            let newHeight = zeroCard.clientHeight
+            zeroCardStyle.height = oldHeight + 'px'
+            zeroCardStyle.transition = 'height 300ms ease'
+            setTimeout(()=>{
+              zeroCardStyle.height = newHeight + 'px'
+            }, 16)
+            setTimeout(()=>{
+              _this.$data.loading = false
+            },200)
+          })
         })
       } else {
         _this.$data.hitokotos = hitokotos
@@ -181,6 +175,9 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.zero-card
-  border-radius 20px
+.btn-box
+  height 150px
+  .btn-load
+    display block
+    margin 30px auto
 </style>

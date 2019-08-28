@@ -5,7 +5,6 @@
     v-ripple="{ class: `${colors[colorIndex]}--text text--accent-4` }"
     hover
     @click="clickCard"
-    ref="zeroCard"
   >
     <v-card-text 
       class="subheading pt-5 pb-4 px-5" 
@@ -35,13 +34,17 @@
 </template>
 
 <script>
-import { clearTimeout, setTimeout } from 'timers';
+import { clearTimeout, setTimeout, setInterval } from 'timers';
 let lastTime = 0
 let clickTimer
 export default {
   props: {
     hitokoto: {
       type: Object
+    },
+    myHeight: {
+      type: String,
+      default: 'height: auto'
     }
   },
   data () {
@@ -77,6 +80,7 @@ export default {
       if ( nowTime - lastTime < 400 ) {
         lastTime = 0
         clickTimer && clearTimeout(clickTimer) 
+        this.$emit('like', this.$props.hitokoto)
       } else {
         lastTime = nowTime
         clickTimer = setTimeout(() => {
@@ -85,20 +89,12 @@ export default {
           this.$data.colorIndex = index
           }, 400)
       }
-    },
-    onResize() {
-      console.log(this.$refs.zeroCard.style.height)
     }
-  },
-  mounted() {
-      console.log(this.$refs.zeroCard.style.height)
   }
 }
 </script>
 
 <style lang="stylus" scoped>
 .zero-card
-  min-height 100px
-  max-height 300px
-  transition all .5s
+  border-radius 20px
 </style>
