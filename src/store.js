@@ -8,30 +8,34 @@ const hitos = [{id: 543, hitokoto: "我秃了，我也变强了", type: "a", fro
 
 export default new Vuex.Store({
   state: {
-    hitokotos: {},
-    curIndex: 0,
-    favorites: []
+    hitokoto: {},
+    favorites: [],
+    favoritesID: [],
+    favoritesColor: 'white'
   },
   getters: {
-    getHitokotos(state) {
-      return state.hitokotos
+    gethitokoto(state) {
+      return state.hitokoto
     },
-    getCurIndex(state) {
-      return state.curIndex
+    getFavoritesID(state) {
+      return state.favoritesID
     },
     getFavorites(state) {
       return state.favorites
     }
   },
   mutations: {
-    setHitokotos(state, hitokotos) {
-      state.hitokotos = hitokotos
+    sethitokoto(state, hitokoto) {
+      state.hitokoto = hitokoto
     },
-    setCurIndex(state, curIndex) {
-      state.curIndex = curIndex
+    setFavoritesID(state, favoritesID) {
+      state.favoritesID = favoritesID
     },
     setFavorites(state, favorites) {
       state.favorites = favorites
+    },
+    setFavoritesColor(state, favoritesColor) {
+      state.favoritesColor = favoritesColor
     }
   },
   actions: {

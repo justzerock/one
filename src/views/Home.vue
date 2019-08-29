@@ -3,7 +3,8 @@
     <v-layout row wrap justify-center align-content-center>
       <v-flex xs10 lg8>
         <zero-card
-          v-bind:hitokoto="hitokotos"
+          v-bind:hitokoto="hitokoto"
+          @like="addFavorite"
         />
       </v-flex>
     </v-layout>
@@ -21,6 +22,20 @@
         >fas fa-circle-notch</v-icon>
       </v-btn>
     </div>
+    <v-snackbar
+      v-model="snackbar"
+      :color="snackbarColor"
+      :timeout="timeout"
+    >
+      {{ snackbarTip }}
+      <v-btn
+        text
+        style="background:none"
+        @click="snackbar = false"
+      >
+        Close
+      </v-btn>
+    </v-snackbar>
   </v-layout>
 </template>
 
@@ -37,12 +52,11 @@ export default {
       loading: true, //  工具栏加载动画
       expand: false, //  展开过渡
       snackbar: false, //    提示消息
-      timeout: 1500, //  提示消息·消失时长
-      copyTip: "", //  复制·提示语
-      tipColor: "", //  提示消息 ·颜色
-      hitokotos: {}, //  一言内容
+      snackbarTip: "", //  复制·提示语
+      snackbarColor: "", //  提示消息 ·颜色
+      timeout: 1500,
+      hitokoto: {}, //  一言内容
       type: ["a", "b", "c", "d", "e", "f", "g"], //  一言类型
-      favorites: []
     };
   },
   components: {
@@ -52,55 +66,65 @@ export default {
     getTimeHex() {
       return this.$vuetify.theme.primary
     },
-    getHitokotos() {
-      return this.$store.getters.getHitokotos
+    gethitokoto() {
+      return this.$store.state.hitokoto
+    },
+    getFavoritesID() {
+      return this.$store.state.favoritesID
     },
     getFavorites() {
-      return this.$store.getters.getFavorites
-    },
-    getCurIndex() {
-      return this.$store.getters.getCurIndex
+      return this.$store.state.favorites
     }
   },
   methods: {
-    copyHex() {
-      let _this = this;
-      _this.$copyText(_this.getTimeHex).then(
-        function(e) {
-          _this.$data.snackbar = true;
-          _this.$data.copyTip = "复制成功";
-          _this.$data.tipColor = "success";
-        },
-        function(e) {
-          _this.$data.snackbar = true;
-          _this.$data.copyTip = "复制失败";
-          _this.$data.tipColor = "error";
-        }
-      );
+    setSnackbar(color, tip) {
+      this.$data.snackbar = true
+      this.$data.snackbarColor = color
+      this.$data.snackbarTip = tip
     },
-    addFavorite(id) {
+    addFavorite() {
       let _this = this
+      let hitokoto = _this.gethitokoto
+      let id = hitokoto.id
       let favorites = _this.getFavorites
-      // favorites = favorites === 'novalue' ? [] : favorites
-      let hitokotos = _this.$data.hitokotos
-      let curIndex = _this.$data.curIndex
-      favorites.push(hitokotos[curIndex])
-      _this.$store.commit('setFavorites', favorites)
+      let favoritesID = _this.getFavoritesID
+      let index = favoritesID.indexOf(id)
+      if (Object.keys(favoritesID).length === 0) {
+        favoritesID = []
+        favorites = []
+      }
+      if (index !== -1) {
+        favoritesID.splice(index,1)
+        favorites.splice(index,1)
+        _this.$store.commit('setFavoritesID', favoritesID)
+        _this.$store.commit('setFavorites', favorites)
+        _this.setSnackbar('info', '^_^ 取消收藏')
+        _this.$store.commit('setFavoritesColor', 'white')
+      } else {
+        favoritesID.push(id)
+        favorites.push(hitokoto)
+        _this.$store.commit('setFavoritesID', favoritesID)
+        _this.$store.commit('setFavorites', favorites)
+        _this.setSnackbar('pink', '^_^ 已收藏')
+        _this.$store.commit('setFavoritesColor', 'red')
+      }
     },
     getHitokoto(opt) {
       let _this = this
-      let hitokotos = _this.getHitokotos
+      let hitokoto = _this.gethitokoto
       let zeroCard = document.getElementsByClassName('zero-card')[0]
       let zeroCardStyle = document.getElementsByClassName('zero-card')[0].style
       let oldHeight = zeroCard.clientHeight
       zeroCardStyle.transition = 'none'
       zeroCardStyle.height = 'auto'
-      if (Object.keys(hitokotos).length === 0 || opt === 'load') {
-        _this.$data.loading = true
+      _this.$data.loading = true
+      if (Object.keys(hitokoto).length === 0 || opt === 'load') {
         api.get("https://v1.hitokoto.cn/").then(res => {
-          hitokotos = res
-          _this.$data.hitokotos = hitokotos
-          _this.$store.commit('setHitokotos', hitokotos)
+          _this.$data.loading = false
+          hitokoto = res
+          _this.$data.hitokoto = hitokoto
+          _this.$store.commit('sethitokoto', hitokoto)
+          _this.checkFavorites()
           _this.$nextTick(()=> {
             let newHeight = zeroCard.clientHeight
             zeroCardStyle.height = oldHeight + 'px'
@@ -108,22 +132,23 @@ export default {
             setTimeout(()=>{
               zeroCardStyle.height = newHeight + 'px'
             }, 16)
-            setTimeout(()=>{
-              _this.$data.loading = false
-            },200)
           })
+        }).catch(erro=>{
+          _this.$data.loading = false
+          _this.setSnackbar('error', '(๑• . •๑)~~出错了，请稍后重试')
         })
       } else {
-        _this.$data.hitokotos = hitokotos
+        _this.$data.hitokoto = hitokoto
+        _this.checkFavorites()
         _this.$data.loading = false
       }
     },
     getManyHitokoto() {
       let _this = this
-      let hitokotos = _this.getHitokotos
+      let hitokoto = _this.gethitokoto
       let curIndex = _this.getCurIndex
-      if (hitokotos.length > 0) {
-        _this.$data.hitokotos = hitokotos
+      if (hitokoto.length > 0) {
+        _this.$data.hitokoto = hitokoto
         _this.$data.btnPrev = curIndex === 0 ? true : false
         _this.$data.loading = false
       } else {
@@ -132,11 +157,11 @@ export default {
           api
             .get("https://v1.hitokoto.cn/", { params: { c: types[i] } })
             .then(res => {
-              //_this.hitokotos = res
-              hitokotos.push(res)
-              _this.$store.commit('setHitokotos', hitokotos)
+              //_this.hitokoto = res
+              hitokoto.push(res)
+              _this.$store.commit('sethitokoto', hitokoto)
               if (i === 0) {
-                _this.$data.hitokotos = _this.getHitokotos
+                _this.$data.hitokoto = _this.gethitokoto
                 _this.$store.commit('setCurIndex', 0)
                 _this.$data.loading = false
               }
@@ -146,12 +171,12 @@ export default {
     },
     switchHitokoto(value) {
       let _this = this
-      //let hitokotos = _this.getHitokotos
+      //let hitokoto = _this.gethitokoto
       let curIndex = _this.getCurIndex
       value === "prev" ? curIndex-- : curIndex++
       _this.$refs.swiper.slideTo(curIndex)
       _this.$store.commit('setCurIndex', curIndex)
-      //_this.$data.hitokotos = hitokotos
+      //_this.$data.hitokoto = hitokoto
       _this.$data.btnPrev = curIndex === 0 ? true : false
       //value === "next" && curIndex > 5 ? _this.getHitokoto() : ""
       if ( value === 'next' && curIndex > 5 ) {
@@ -164,6 +189,13 @@ export default {
       this.$data.btnPrev = activeIndex == 0 ? true : false
       this.$store.commit('setCurIndex', activeIndex)
       console.log('emit:'+ activeIndex)
+    },
+    checkFavorites() {
+      let hitokoto = this.gethitokoto
+      let favoritesID = this.getFavoritesID
+      let index = favoritesID.indexOf(hitokoto.id)
+      let favoritesColor = index === -1 ? 'white' : 'red'
+      this.$store.commit('setFavoritesColor', favoritesColor)
     }
   },
   mounted() {

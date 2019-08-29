@@ -9,7 +9,6 @@ export default {
   mounted() {
     let _this = this
     _this.$myTitle = '关于'
-    console.log(_this.$myTitle)
   }
 }
 </script>

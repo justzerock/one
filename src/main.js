@@ -11,7 +11,7 @@ import '@fortawesome/fontawesome-free/css/all.css'
 import './plugins/clipboard'
 import './plugins/axios'
 import './plugins/localStorage'
-import './plugins/myTitle'
+import './plugins/prototypes'
 import './plugins/swiper'
 
 Vue.config.productionTip = false

@@ -7,21 +7,13 @@ let get = function (url, params) {
         if (response.status === 200) {
           resolve(response.data)
         } else {
-          Toast({
-            message: response.data
-          })
+          reject(err)
         }
       }, err => {
         reject(err)
-        Toast({
-          message: '操作异常'
-        })
       })
       .catch((error) => {
         reject(error)
-        Toast({
-          message: '操作异常'
-        })
       })
   })
 }
@@ -33,21 +25,13 @@ let post = function (url, params) {
         if (response.data.status === 200) {
           resolve(response.data)
         } else {
-          Toast({
-            message: response.data.msg
-          })
+          reject(err)
         }
       }, err => {
         reject(err)
-        Toast({
-          message: '操作异常'
-        })
       })
       .catch((error) => {
         reject(error)
-        Toast({
-          message: '操作异常'
-        })
       })
   })
 }

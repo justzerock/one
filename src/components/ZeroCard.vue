@@ -80,7 +80,7 @@ export default {
       if ( nowTime - lastTime < 400 ) {
         lastTime = 0
         clickTimer && clearTimeout(clickTimer) 
-        this.$emit('like', this.$props.hitokoto)
+        this.$emit('like')
       } else {
         lastTime = nowTime
         clickTimer = setTimeout(() => {
