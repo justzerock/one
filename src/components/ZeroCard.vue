@@ -40,7 +40,14 @@ let clickTimer
 export default {
   props: {
     hitokoto: {
-      type: Object
+      type: Object,
+      default: ()=> {
+        return {
+          hitokoto: '或许是通往Hitokoto的道路出现一点阻碍，莫急，点击下方按钮重试吧',
+          from: '不知名程序员',
+          type: 'g'   
+        }
+      }
     },
     myHeight: {
       type: String,

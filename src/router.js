@@ -13,6 +13,13 @@ export default new Router({
       meta: {
         title: '亦言'
       }
+    },{
+      path: '/favorite',
+      name: 'favorite',
+      component: () => import('./views/Favorite.vue'),
+      meta: {
+        title: '收藏·亦言'
+      }
     },
     {
       path: '/about',
