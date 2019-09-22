@@ -75,8 +75,10 @@ export default {
           return "原创";
         case "f":
           return "网络";
+        case "g":
+          return "其他"
         default:
-          return "其他";
+          return "关于";
       }
     }
   },
@@ -100,8 +102,3 @@ export default {
   }
 }
 </script>
-
-<style lang="stylus" scoped>
-.zero-card
-  border-radius 20px
-</style>
