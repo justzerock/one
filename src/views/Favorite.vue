@@ -1,38 +1,137 @@
 <template>
   <v-layout align-content-start justify-center column>
-    <v-layout row wrap justify-center align-content-center>
+    <v-layout row wrap align-content-center justify-center
+      v-bind:style="listStyle">
       <v-flex
-        class="fav-card"
+        class="fav-card-bg"
         v-for="(item, index) in getFavorites"
         :key="index"
         xs10 sm8 md5 lg3>
         <zero-card
+          v-bind:class="['fav-card', item.id.toString()]"
           v-bind:hitokoto="item"
+          v-bind:favorite="favorite"
+          v-bind:favoriteID="item.id"
+          v-bind:ids="ids"
+          @zclick="showIcon(item.id)"
           ></zero-card>
         </v-flex>
     </v-layout>
+    <zero-bottom
+      v-bind:showNav="showNav"
+      v-bind:count="getSelCardCount"
+      @cancleCard="cancleCard"
+      @checkCard="checkCard"
+      @deleteCard="openDialog"
+    />
+    <zero-dialog
+      v-bind:dialog="dialog"
+      @deleteCard="deleteCard"
+      @cancelDialog="cancelDialog"
+    />
   </v-layout>
 </template>
 
 <script>
-import ZeroCard from "../components/ZeroCard"
+import ZeroCard from '../components/ZeroCard'
+import ZeroBottom from '../components/ZeroBottom'
+import ZeroDialog from '../components/ZeroDialog'
 
 export default {
+  data () {
+    return {
+      favorite: true,
+      showNav: false,
+      ids: [],
+      dialog: false
+    }
+  },
   components: {
-    ZeroCard
+    ZeroCard,
+    ZeroBottom,
+    ZeroDialog
   },
   computed: {
-    getFavoritesID() {
+    getFavoritesID () {
       return this.$store.state.favoritesID
     },
-    getFavorites() {
+    getFavorites () {
       return this.$store.state.favorites
+    },
+    getSelCardCount () {
+      return this.$data.ids.length
+    },
+    listStyle () {
+      let obj = this.$data.showNav ? { marginBottom: '56px', transition: 'all .2s' } : { transition: 'all .2s' }
+      return obj
     }
-  }  
+  },
+  methods: {
+    showIcon (id) {
+      let index = this.$data.ids.indexOf(id)
+      if (index === -1) {
+        this.$data.ids.push(id)
+      } else {
+        this.$data.ids.splice(index, 1)
+      }
+      this.checkBottom()
+    },
+    checkBottom () {
+      this.$data.showNav = this.getSelCardCount > 0
+    },
+    checkCard () {
+      let favIds = this.getFavoritesID
+      let ids = []
+      for (let item of favIds) {
+        ids.push(item)
+      }
+      this.$data.ids = ids
+    },
+    cancleCard () {
+      this.$data.ids = []
+      this.checkBottom()
+    },
+    openDialog () {
+      this.$data.dialog = true
+    },
+    cancelDialog () {
+      this.$data.dialog = false
+    },
+    deleteCard () {
+      let _this = this
+      let favorites = []
+      let favoritesID = []
+      let ids = _this.$data.ids
+      if (_this.getSelCardCount !== _this.getFavoritesID.length) {
+        favorites = _this.getFavorites
+        favoritesID = _this.getFavoritesID
+        for (let item of ids) {
+          let index = favoritesID.indexOf(item)
+          favorites.splice(index, 1)
+          favoritesID.splice(index, 1)
+        }
+      }
+      _this.$store.commit('setFavoritesID', favoritesID)
+      _this.$store.commit('setFavorites', favorites)
+      _this.cancleCard()
+      _this.$data.dialog = false
+      _this.setTitle()
+    },
+    setTitle () {
+      this.$store.commit('setMyTitle', '收藏 (' + this.getFavorites.length + ')')
+    }
+  },
+  mounted () {
+    this.setTitle()
+  }
 }
 </script>
 
 <style lang="stylus" scoped>
-.fav-card 
+.fav-card-bg
   margin 10px
+  border-radius 2px
+  & .fav-card
+    box-sizing border-box
+    transition all .3s
 </style>

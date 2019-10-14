@@ -18,6 +18,7 @@
         v-for="item in items"
         :key="item.title"
         :to="item.to"
+        replace
       >
         <v-list-tile-action>
           <v-icon color="primary">{{ item.icon }}</v-icon>
@@ -30,7 +31,7 @@
         </v-list-tile-content>
       </v-list-tile>
     </v-list>
-  </div> 
+  </div>
 </template>
 
 <script>

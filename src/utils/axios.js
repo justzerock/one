@@ -6,8 +6,6 @@ let get = function (url, params) {
       .then(response => {
         if (response.status === 200) {
           resolve(response.data)
-        } else {
-          reject(err)
         }
       }, err => {
         reject(err)
@@ -24,8 +22,6 @@ let post = function (url, params) {
       .then(response => {
         if (response.data.status === 200) {
           resolve(response.data)
-        } else {
-          reject(err)
         }
       }, err => {
         reject(err)

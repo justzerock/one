@@ -7,10 +7,10 @@ import en from 'vuetify/es5/locale/en'
 
 Vue.use(Vuetify, {
   theme: {
-    primary: colors.teal.base,
+    primary: '#123456',
     secondary: colors.orange.base,
     accent: colors.blue.base,
-    error: colors.red.base,
+    error: '#FB5E5B',
     warning: colors.amber.base,
     info: colors.cyan.base,
     success: colors.green.base
