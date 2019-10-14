@@ -9,7 +9,7 @@
     <div
       v-if="favorite"
       class="icon-sel"
-      v-bind:class="classIsShow"
+      :class="classIsShow"
       >
       <v-icon dark class="icon-sel-icon">fa fa-check</v-icon>
     </div>
@@ -26,13 +26,13 @@
           <v-avatar>
             <v-icon>account_circle</v-icon>
           </v-avatar>
-          {{hitokoto.from}}
+          {{hitokoto.from|fromFilter}}
         </v-chip>
         <v-chip color="secondary" text-color="white">
           <v-avatar class="secondary darken-1">
             <v-icon>star</v-icon>
           </v-avatar>
-          {{hitokoto.type|hitoFilter}}
+          {{hitokoto.type|typeFilter}}
         </v-chip>
       </v-layout>
     </v-card-actions>
@@ -82,7 +82,7 @@ export default {
     }
   },
   filters: {
-    hitoFilter (value) {
+    typeFilter (value) {
       switch (value) {
         case 'a':
           return '动画'
@@ -101,6 +101,13 @@ export default {
         default:
           return '关于'
       }
+    },
+    fromFilter (value) {
+      if (!value) return ''
+      if (value.length > 5) {
+        return value.slice(0, 5) + '...'
+      }
+      return value
     }
   },
   methods: {
@@ -121,9 +128,6 @@ export default {
         clickTimer = setTimeout(() => {
         }, 400)
       }
-    },
-    delCard (id) {
-      console.log(id)
     }
   },
   computed: {

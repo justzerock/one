@@ -2,8 +2,6 @@ import Vue from 'vue'
 import Vuetify from 'vuetify/lib'
 import 'vuetify/src/stylus/app.styl'
 import colors from 'vuetify/es5/util/colors'
-import zhHans from 'vuetify/es5/locale/zh-Hans'
-import en from 'vuetify/es5/locale/en'
 
 Vue.use(Vuetify, {
   theme: {
@@ -15,12 +13,5 @@ Vue.use(Vuetify, {
     info: colors.cyan.base,
     success: colors.green.base
   },
-  options: {
-    customProperties: true
-  },
-  iconfont: 'fa',
-  lang: {
-    locales: { zhHans, en },
-    current: 'zh-Hans'
-  }
+  iconfont: 'fa'
 })

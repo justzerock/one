@@ -8,7 +8,7 @@
           </v-list-tile-title>
         </v-list-tile-content>
         <v-list-tile-avatar>
-          <img :src="require('../assets/logo.jpg')">
+          <img :src="require('../assets/logo.png')">
         </v-list-tile-avatar>
       </v-list-tile>
     </v-list>
@@ -30,6 +30,19 @@
           </v-list-tile-title>
         </v-list-tile-content>
       </v-list-tile>
+      <v-divider></v-divider>
+      <v-list-tile>
+        <v-switch
+          v-model="switchColor"
+          color="primary"
+          value="primary"
+          hide-details
+        >
+          <template v-slot:label>
+            <strong :class="[ switchColor ? 'primary--text' : '']">锁定当前颜色: {{getTimeHex}}</strong>
+          </template>
+        </v-switch>
+      </v-list-tile>
     </v-list>
   </div>
 </template>
@@ -43,7 +56,24 @@ export default {
         { title: '亦言', icon: 'home', to: '/' },
         { title: '收藏', icon: 'favorite', to: '/favorite' },
         { title: '关于', icon: 'info', to: '/about' }
-      ]
+      ],
+      switchColor: 'primary'
+    }
+  },
+  computed: {
+    getTimeHex () {
+      return this.$vuetify.theme.primary
+    }
+  },
+  watch: {
+    switchColor: function () {
+      let timer = !this.switchColor
+      let primary = ''
+      if (!timer) {
+        primary = this.getTimeHex
+      }
+      this.$store.commit('setPrimary', primary)
+      this.$store.commit('setHexTimer', timer)
     }
   }
 }

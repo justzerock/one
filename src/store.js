@@ -12,7 +12,9 @@ export default new Vuex.Store({
     favoritesColor: 'white',
     myTitle: '亦言',
     transform: '',
-    loveWeb: false
+    loveWeb: false,
+    hexTimer: true,
+    primary: ''
   },
   mutations: {
     setHitokoto (state, hitokoto) {
@@ -35,6 +37,12 @@ export default new Vuex.Store({
     },
     setLoveWeb (state, loveWeb) {
       state.loveWeb = loveWeb
+    },
+    setHexTimer (state, hexTimer) {
+      state.hexTimer = hexTimer
+    },
+    setPrimary (state, primary) {
+      state.primary = primary
     }
   },
   plugins: [createPersiste()]

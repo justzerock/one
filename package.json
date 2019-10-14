@@ -10,7 +10,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.11.2",
     "axios": "^0.19.0",
-    "core-js": "^2.6.9",
+    "core-js": "^2.6.10",
     "jinrishici": "^1.0.6",
     "material-design-icons-iconfont": "^5.0.1",
     "node-sass": "^4.12.0",

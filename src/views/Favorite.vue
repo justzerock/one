@@ -1,31 +1,34 @@
 <template>
   <v-layout align-content-start justify-center column>
     <v-layout row wrap align-content-center justify-center
-      v-bind:style="listStyle">
+      class="fav-layout"
+      :class="onlyOne"
+      :style="listStyle">
       <v-flex
         class="fav-card-bg"
+        :class="onlyOne"
         v-for="(item, index) in getFavorites"
         :key="index"
         xs10 sm8 md5 lg3>
         <zero-card
-          v-bind:class="['fav-card', item.id.toString()]"
-          v-bind:hitokoto="item"
-          v-bind:favorite="favorite"
-          v-bind:favoriteID="item.id"
-          v-bind:ids="ids"
+          class="fav-card"
+          :hitokoto="item"
+          :favorite="favorite"
+          :favoriteID="item.id"
+          :ids="ids"
           @zclick="showIcon(item.id)"
           ></zero-card>
         </v-flex>
     </v-layout>
     <zero-bottom
-      v-bind:showNav="showNav"
-      v-bind:count="getSelCardCount"
+      :showNav="showNav"
+      :count="getSelCardCount"
       @cancleCard="cancleCard"
       @checkCard="checkCard"
       @deleteCard="openDialog"
     />
     <zero-dialog
-      v-bind:dialog="dialog"
+      :dialog="dialog"
       @deleteCard="deleteCard"
       @cancelDialog="cancelDialog"
     />
@@ -62,8 +65,14 @@ export default {
       return this.$data.ids.length
     },
     listStyle () {
-      let obj = this.$data.showNav ? { marginBottom: '56px', transition: 'all .2s' } : { transition: 'all .2s' }
+      let obj = this.$data.showNav && this.getFavoritesID.length !== 1
+        ? { marginBottom: '56px' }
+        : {}
       return obj
+    },
+    onlyOne () {
+      let theClass = this.getFavoritesID.length === 1 ? 'only-one' : ''
+      return theClass
     }
   },
   methods: {
@@ -128,10 +137,19 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.fav-card-bg
-  margin 10px
-  border-radius 2px
-  & .fav-card
-    box-sizing border-box
-    transition all .3s
+.fav-layout
+  position relative
+  transition all .2s
+  &.only-one
+    margin-bottom 150px
+  .fav-card-bg
+    margin 10px
+    &.only-one
+      position absolute
+      top 50%
+      transform translateY(-50%)
+      margin 0
+    & .fav-card
+      box-sizing border-box
+      transition all .3s
 </style>

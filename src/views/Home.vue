@@ -1,6 +1,8 @@
 <template>
   <v-layout align-content-start justify-center column fill-height>
-    <v-layout wrap justify-center align-content-center fill-height>
+    <v-layout wrap justify-center align-content-center fill-height
+      class="home-layout"
+    >
       <v-flex xs10 lg8
         class="home-card-bg"
         :class="getTransform"
@@ -9,7 +11,9 @@
           class="home-card"
           :class="getTransform"
           :hitokoto="hitokoto"
+          :style="cardStyle"
           @dbclick="addFavorite"
+          ref="homeCard"
         />
       </v-flex>
     </v-layout>
@@ -60,7 +64,8 @@ export default {
       snackbarColor: '', //  提示消息 ·颜色
       timeout: 1500,
       hitokoto: {}, //  一言内容
-      type: ['a', 'b', 'c', 'd', 'e', 'f', 'g'] //  一言类型
+      type: ['a', 'b', 'c', 'd', 'e', 'f', 'g'], //  一言类型
+      cardStyle: {}
     }
   },
   components: {
@@ -119,8 +124,8 @@ export default {
     getNewHitokoto (opt) {
       let _this = this
       let hitokoto = _this.getHitokoto
-      let zeroCard = document.getElementsByClassName('zero-card')[0]
-      let zeroCardStyle = document.getElementsByClassName('zero-card')[0].style
+      let zeroCard = _this.$refs.homeCard.$el
+      let zeroCardStyle = _this.$refs.homeCard.$el.style
       let oldHeight = zeroCard.clientHeight
       zeroCardStyle.height = 'auto'
       _this.$data.loading = true
@@ -167,12 +172,17 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+.home-layout
+  position relative
 .home-card-bg
+  position absolute
+  top 50%
+  transform translate(0, -50%)
   border-radius 2px
   background #FB5E5B
   transition all .3s
   &.transform
-    transform translateX(10px)
+    transform translate(10px, -50%)
 .home-card
   transition all .3s
   &.transform

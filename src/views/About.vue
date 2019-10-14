@@ -1,9 +1,13 @@
 <template>
   <v-layout align-content-start justify-center column fill-height>
-    <v-layout row wrap justify-center align-content-center>
-      <v-flex xs10 lg8>
+    <v-layout row wrap justify-center align-content-center
+      class="about-layout"
+    >
+      <v-flex xs10 lg8
+        class="about-card-bg"
+      >
         <zero-card
-          v-bind:hitokoto="about"
+          :hitokoto="about"
           @dbclick="iLoveIt"
         ></zero-card>
       </v-flex>
@@ -63,6 +67,12 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+.about-layout
+  position relative
+  .about-card-bg
+    position absolute
+    top 50%
+    transform translateY(-50%)
 .btn-box
   height 150px
   .btn-like

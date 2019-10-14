@@ -6,8 +6,7 @@
       fixed
       temporary
     >
-      <zero-drawer-list>
-      </zero-drawer-list>
+      <zero-drawer-list/>
     </v-navigation-drawer>
     <v-toolbar
       app
@@ -34,7 +33,7 @@
     <v-content>
       <v-container fluid fill-height
       class="primary v-container pa-0">
-        <transition name="slide-right">
+        <transition>
           <router-view></router-view>
         </transition>
       </v-container>
@@ -52,7 +51,8 @@ export default {
   name: 'App',
   data () {
     return {
-      drawer: null //  抽屉开关
+      drawer: null, //  抽屉开关
+      hexTimer: null
     }
   },
   components: {
@@ -73,15 +73,15 @@ export default {
     },
     getMyTitle () {
       return this.$store.state.myTitle
+    },
+    getHexTimer () {
+      return this.$store.state.hexTimer
+    },
+    getPrimary () {
+      return this.$store.state.primary
     }
   },
   methods: {
-    changeTheme () {
-      let _this = this
-      let primary = formatDate(new Date(), 'time')
-      _this.$vuetify.theme.primary = primary
-      setThemeColor(primary)
-    },
     addFavorite () {
       let _this = this
       let hitokoto = _this.getHitokoto
@@ -108,13 +108,40 @@ export default {
       _this.$store.commit('setFavorites', favorites)
       _this.$store.commit('setTransform', transform)
       _this.$store.commit('setFavoritesColor', favoritesColor)
+    },
+    changeTheme () {
+      let _this = this
+      let primary = formatDate(new Date(), 'time')
+      _this.$vuetify.theme.primary = primary
+      setThemeColor(primary)
+    },
+    setHexTimer (isTimer) {
+      if (!isTimer && this.hexTimer) {
+        clearInterval(this.hexTimer._id)
+        this.hexTimer = null
+        this.$vuetify.theme.primary = this.getPrimary
+        setThemeColor(this.getPrimary)
+      } else if (isTimer) {
+        this.hexTimer = setInterval(() => {
+          this.changeTheme()
+        }, 1000)
+      } else {
+        this.$vuetify.theme.primary = this.getPrimary
+        setThemeColor(this.getPrimary)
+      }
     }
   },
-  mounted () {
-    let _this = this
-    setInterval(function () {
-      _this.changeTheme()
-    }, 1000)
+  watch: {
+    getHexTimer: function () {
+      this.setHexTimer(this.getHexTimer)
+    }
+  },
+  created () {
+    this.setHexTimer(this.getHexTimer)
+  },
+  beforeDestroy () {
+    clearInterval(this.hexTimer._id)
+    this.hexTimer = null
   }
 }
 </script>
