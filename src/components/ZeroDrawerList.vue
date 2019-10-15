@@ -36,10 +36,9 @@
           v-model="switchColor"
           color="primary"
           value="primary"
-          hide-details
         >
           <template v-slot:label>
-            <strong :class="[ switchColor ? 'primary--text' : '']">锁定当前颜色: {{getTimeHex}}</strong>
+            <strong style="padding-left:.5em" :class="[ switchColor ? 'primary--text' : '']">锁定: {{getTimeHex}}</strong>
           </template>
         </v-switch>
       </v-list-tile>
@@ -48,6 +47,7 @@
 </template>
 
 <script>
+
 export default {
   data () {
     return {
@@ -57,12 +57,16 @@ export default {
         { title: '收藏', icon: 'favorite', to: '/favorite' },
         { title: '关于', icon: 'info', to: '/about' }
       ],
-      switchColor: 'primary'
+      switchColor: 'primary',
+      color: ''
     }
   },
   computed: {
     getTimeHex () {
       return this.$vuetify.theme.primary
+    },
+    getPrimary () {
+      return this.$store.state.primary
     }
   },
   watch: {
@@ -74,6 +78,11 @@ export default {
       }
       this.$store.commit('setPrimary', primary)
       this.$store.commit('setHexTimer', timer)
+    }
+  },
+  created () {
+    if (this.getPrimary === '') {
+      this.switchColor = ''
     }
   }
 }

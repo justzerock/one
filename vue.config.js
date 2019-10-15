@@ -4,6 +4,9 @@ module.exports = {
   },
   pwa: {
     themeColor: '#123456',
-    backgroundColor: '#123456'
+    backgroundColor: '#123456',
+    workboxOptions: {
+      skipWaiting: true
+    }
   }
 }

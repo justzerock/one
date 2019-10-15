@@ -10,6 +10,14 @@ let router = new Router({
   mode: 'history',
   routes: [
     {
+      path: '/',
+      name: 'home',
+      component: Home,
+      meta: {
+        title: '亦言'
+      }
+    },
+    {
       path: '/favorite',
       name: 'favorite',
       component: Favorite,
@@ -27,11 +35,7 @@ let router = new Router({
     },
     {
       path: '*',
-      name: 'home',
-      component: Home,
-      meta: {
-        title: '亦言'
-      }
+      redirect: '/'
     }
   ]
 })

@@ -19,7 +19,11 @@
       <v-toolbar-side-icon
         @click.stop="drawer = !drawer"
       ></v-toolbar-side-icon>
-      <v-toolbar-title>{{getMyTitle}}</v-toolbar-title>
+      <v-toolbar-title
+        class="toggle-full-screen"
+        @click="swicthFullScreen()"
+      >{{getMyTitle}}
+      </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn icon
         v-if="this.$route.path !== '/favorite' && this.$route.path !== '/about'"
@@ -33,9 +37,7 @@
     <v-content>
       <v-container fluid fill-height
       class="primary v-container pa-0">
-        <transition>
-          <router-view></router-view>
-        </transition>
+        <router-view></router-view>
       </v-container>
     </v-content>
   </v-app>
@@ -46,13 +48,15 @@ import ZeroDrawerList from './components/ZeroDrawerList'
 import { formatDate } from './utils/formatDate'
 import { setThemeColor } from './utils/setThemeColor'
 import { setInterval } from 'timers'
+import screenfull from 'screenfull'
 
 export default {
   name: 'App',
   data () {
     return {
       drawer: null, //  抽屉开关
-      hexTimer: null
+      hexTimer: null,
+      isFullScreen: false
     }
   },
   components: {
@@ -82,6 +86,13 @@ export default {
     }
   },
   methods: {
+    swicthFullScreen () {
+      if (screenfull.isFullscreen) {
+        screenfull.toggle()
+      } else {
+        screenfull.request()
+      }
+    },
     addFavorite () {
       let _this = this
       let hitokoto = _this.getHitokoto
@@ -109,9 +120,9 @@ export default {
       _this.$store.commit('setTransform', transform)
       _this.$store.commit('setFavoritesColor', favoritesColor)
     },
-    changeTheme () {
+    changeTheme (color) {
       let _this = this
-      let primary = formatDate(new Date(), 'time')
+      let primary = color === '' ? formatDate(new Date(), 'time') : color
       _this.$vuetify.theme.primary = primary
       setThemeColor(primary)
     },
@@ -119,15 +130,13 @@ export default {
       if (!isTimer && this.hexTimer) {
         clearInterval(this.hexTimer._id)
         this.hexTimer = null
-        this.$vuetify.theme.primary = this.getPrimary
-        setThemeColor(this.getPrimary)
+        this.changeTheme(this.getPrimary)
       } else if (isTimer) {
         this.hexTimer = setInterval(() => {
-          this.changeTheme()
+          this.changeTheme('')
         }, 1000)
       } else {
-        this.$vuetify.theme.primary = this.getPrimary
-        setThemeColor(this.getPrimary)
+        this.changeTheme(this.getPrimary)
       }
     }
   },
@@ -149,4 +158,7 @@ export default {
 <style lang="stylus" scoped>
 .v-toolbar,.v-container
   transition all .2s
+.toggle-full-screen
+  cursor pointer
+  user-select none
 </style>
