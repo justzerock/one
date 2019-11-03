@@ -16,23 +16,14 @@
       scroll-off-screen
       flat
     >
-      <v-toolbar-side-icon
+      <v-icon
         @click.stop="drawer = !drawer"
-      ></v-toolbar-side-icon>
+      >if if-{{getPath === '/favorite' ? 'bookmark' : getPath === '/about' ? 'info' : 'home'}}</v-icon>
       <v-toolbar-title
-        class="toggle-full-screen"
-        @click="swicthFullScreen()"
-      >{{getMyTitle}}
-      </v-toolbar-title>
+        @click.stop="drawer = !drawer"
+        class="title"
+      >{{getMyTitle}}</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn icon
-        v-if="this.$route.path !== '/favorite' && this.$route.path !== '/about'"
-        @click="addFavorite"
-      >
-        <v-icon
-          :color="getFavoriteColor"
-        >fa fa-heart</v-icon>
-      </v-btn>
     </v-toolbar>
     <v-content>
       <v-container fluid fill-height
@@ -45,112 +36,51 @@
 
 <script>
 import ZeroDrawerList from './components/ZeroDrawerList'
-import { formatDate } from './utils/formatDate'
 import { setThemeColor } from './utils/setThemeColor'
-import { setInterval } from 'timers'
-import screenfull from 'screenfull'
 
 export default {
   name: 'App',
   data () {
     return {
-      drawer: null, //  抽屉开关
-      hexTimer: null,
-      isFullScreen: false
+      drawer: null //  抽屉开关
     }
   },
   components: {
     ZeroDrawerList
   },
   computed: {
-    getHitokoto () {
-      return this.$store.state.hitokoto
-    },
-    getFavoritesID () {
-      return this.$store.state.favoritesID
-    },
-    getFavorites () {
-      return this.$store.state.favorites
-    },
-    getFavoriteColor () {
-      return this.$store.state.favoritesColor
-    },
     getMyTitle () {
       return this.$store.state.myTitle
     },
-    getHexTimer () {
-      return this.$store.state.hexTimer
-    },
     getPrimary () {
       return this.$store.state.primary
+    },
+    getPath () {
+      let path = this.$route.path
+      let icon = 'home'
+      if (path === '/favorite') {
+        icon = 'bookmark'
+      } else if (path === '/about') {
+        icon = ''
+      }
+      return this.$route.path
     }
   },
   methods: {
-    swicthFullScreen () {
-      if (screenfull.isFullscreen) {
-        screenfull.toggle()
-      } else {
-        screenfull.request()
-      }
-    },
-    addFavorite () {
-      let _this = this
-      let hitokoto = _this.getHitokoto
-      let id = hitokoto.id
-      let favorites = _this.getFavorites
-      let favoritesID = _this.getFavoritesID
-      let index = favoritesID.indexOf(id)
-      let transform = 'transform'
-      let favoritesColor = 'error'
-      if (Object.keys(favoritesID).length === 0) {
-        favoritesID = []
-        favorites = []
-      }
-      if (index !== -1) {
-        favoritesID.splice(index, 1)
-        favorites.splice(index, 1)
-        transform = ''
-        favoritesColor = 'white'
-      } else {
-        favoritesID.push(id)
-        favorites.push(hitokoto)
-      }
-      _this.$store.commit('setFavoritesID', favoritesID)
-      _this.$store.commit('setFavorites', favorites)
-      _this.$store.commit('setTransform', transform)
-      _this.$store.commit('setFavoritesColor', favoritesColor)
-    },
     changeTheme (color) {
       let _this = this
-      let primary = color === '' ? formatDate(new Date(), 'time') : color
-      _this.$vuetify.theme.primary = primary
-      setThemeColor(primary)
-    },
-    setHexTimer (isTimer) {
-      if (!isTimer && this.hexTimer) {
-        clearInterval(this.hexTimer._id)
-        this.hexTimer = null
-        this.changeTheme(this.getPrimary)
-      } else if (isTimer) {
-        this.hexTimer = setInterval(() => {
-          this.changeTheme('')
-        }, 1000)
-      } else {
-        this.changeTheme(this.getPrimary)
-      }
+      _this.$vuetify.theme.primary = color
+      setThemeColor(color)
     }
   },
   watch: {
-    getHexTimer: function () {
-      this.setHexTimer(this.getHexTimer)
+    getPrimary: function (val) {
+      this.changeTheme(val)
     }
   },
   created () {
-    this.setHexTimer(this.getHexTimer)
-  },
-  beforeDestroy () {
-    clearInterval(this.hexTimer._id)
-    this.hexTimer = null
+    let primary = this.getPrimary
+    this.changeTheme(primary)
   }
 }
 </script>
@@ -158,7 +88,8 @@ export default {
 <style lang="stylus" scoped>
 .v-toolbar,.v-container
   transition all .2s
-.toggle-full-screen
+  z-index 3
+.title
   cursor pointer
   user-select none
 </style>

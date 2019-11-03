@@ -9,16 +9,20 @@
         :class="onlyOne"
         v-for="(item, index) in getFavorites"
         :key="index"
-        xs10 sm8 md5 lg3>
+        >
         <zero-card
           class="fav-card"
           :hitokoto="item"
           :favorite="favorite"
-          :favoriteID="item.id"
-          :ids="ids"
-          @zclick="showIcon(item.id)"
-          ></zero-card>
-        </v-flex>
+          :favoriteID="String(item.id)"
+          :poetTextStyle="poetTextStyle"
+          :cardTextStyle="cardTextStyle"
+          :IDs="IDs"
+          :expandIDs="expandIDs"
+          @zclick="showIcon(String(item.id))"
+          @switchMode="switchCardMode(String(item.id))"
+        />
+      </v-flex>
     </v-layout>
     <zero-bottom
       :showNav="showNav"
@@ -45,8 +49,21 @@ export default {
     return {
       favorite: true,
       showNav: false,
-      ids: [],
-      dialog: false
+      IDs: [],
+      expandIDs: [],
+      dialog: false,
+      poetTextStyle: {
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis'
+      },
+      cardTextStyle: {
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        display: 'flex',
+        alignItems: 'center'
+      }
     }
   },
   components: {
@@ -62,10 +79,10 @@ export default {
       return this.$store.state.favorites
     },
     getSelCardCount () {
-      return this.$data.ids.length
+      return this.IDs.length
     },
     listStyle () {
-      let obj = this.$data.showNav && this.getFavoritesID.length !== 1
+      let obj = this.showNav && this.getFavoritesID.length !== 1
         ? { marginBottom: '56px' }
         : {}
       return obj
@@ -77,44 +94,44 @@ export default {
   },
   methods: {
     showIcon (id) {
-      let index = this.$data.ids.indexOf(id)
+      let index = this.IDs.indexOf(id)
       if (index === -1) {
-        this.$data.ids.push(id)
+        this.IDs.push(id)
       } else {
-        this.$data.ids.splice(index, 1)
+        this.IDs.splice(index, 1)
       }
       this.checkBottom()
     },
     checkBottom () {
-      this.$data.showNav = this.getSelCardCount > 0
+      this.showNav = this.getSelCardCount > 0
     },
     checkCard () {
       let favIds = this.getFavoritesID
-      let ids = []
+      let IDs = []
       for (let item of favIds) {
-        ids.push(item)
+        IDs.push(item)
       }
-      this.$data.ids = ids
+      this.IDs = IDs
     },
     cancleCard () {
-      this.$data.ids = []
+      this.IDs = []
       this.checkBottom()
     },
     openDialog () {
-      this.$data.dialog = true
+      this.dialog = true
     },
     cancelDialog () {
-      this.$data.dialog = false
+      this.dialog = false
     },
     deleteCard () {
       let _this = this
       let favorites = []
       let favoritesID = []
-      let ids = _this.$data.ids
+      let IDs = _this.IDs
       if (_this.getSelCardCount !== _this.getFavoritesID.length) {
         favorites = _this.getFavorites
         favoritesID = _this.getFavoritesID
-        for (let item of ids) {
+        for (let item of IDs) {
           let index = favoritesID.indexOf(item)
           favorites.splice(index, 1)
           favoritesID.splice(index, 1)
@@ -123,11 +140,20 @@ export default {
       _this.$store.commit('setFavoritesID', favoritesID)
       _this.$store.commit('setFavorites', favorites)
       _this.cancleCard()
-      _this.$data.dialog = false
+      _this.dialog = false
       _this.setTitle()
     },
     setTitle () {
       this.$store.commit('setMyTitle', '收藏 (' + this.getFavorites.length + ')')
+    },
+    /* 切换卡片显示模式 */
+    switchCardMode (id) {
+      let index = this.expandIDs.indexOf(id)
+      if (index === -1) {
+        this.expandIDs.push(id)
+      } else {
+        this.expandIDs.splice(index, 1)
+      }
     }
   },
   mounted () {
@@ -139,7 +165,7 @@ export default {
 <style lang="stylus" scoped>
 .fav-layout
   position relative
-  transition all .2s
+  transition all .5s ease-in-out
   &.only-one
     margin-bottom 150px
   .fav-card-bg
@@ -151,5 +177,11 @@ export default {
       margin 0
     & .fav-card
       box-sizing border-box
-      transition all .3s
+      transition all .5s ease-in-out
+.fav-card
+  for i in 1..4
+    @media (min-width 2**(i+7)px)
+      width (90/i)vw
+      height 10vh
+      display flex
 </style>

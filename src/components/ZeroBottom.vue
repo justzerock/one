@@ -11,7 +11,7 @@
       @click="cancleCard"
     >
       <span>取消</span>
-      <v-icon>fa fa-times</v-icon>
+      <v-icon>if if-close</v-icon>
     </v-btn>
 
     <v-btn
@@ -20,7 +20,7 @@
       @click="checkCard"
     >
       <span>全选</span>
-      <v-icon>fa fa-check-square</v-icon>
+      <v-icon>if if-check-square</v-icon>
     </v-btn>
 
     <v-btn
@@ -29,7 +29,7 @@
       @click="deleteCard"
     >
       <span>删除已选 ({{count}})</span>
-      <v-icon>fa fa-trash</v-icon>
+      <v-icon>if if-trash</v-icon>
     </v-btn>
   </v-bottom-nav>
 </template>

@@ -3,10 +3,9 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import './registerServiceWorker'
-import 'material-design-icons-iconfont'
-import 'roboto-fontface/css/roboto/roboto-fontface.css'
-import '@fortawesome/fontawesome-free/css/all.css'
 import './plugins/vuetify'
+import './assets/font/iconfont.css'
+import './assets/zerock.css'
 
 Vue.config.productionTip = false
 

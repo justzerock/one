@@ -3,13 +3,15 @@
     <v-layout row wrap justify-center align-content-center
       class="about-layout"
     >
-      <v-flex xs10 lg8
+      <v-flex
         class="about-card-bg"
       >
-        <zero-card
-          :hitokoto="about"
-          @dbclick="iLoveIt"
-        ></zero-card>
+        <zero-more
+          class="about-card"
+          :dataPoet="aboutData"
+          :about="about"
+          @dbabout="iLoveIt"
+        />
       </v-flex>
     </v-layout>
     <div class="btn-box">
@@ -21,28 +23,40 @@
         @click="iLoveIt"
         >
         <v-icon
+          :class="[{love: getLoveWeb}, 'like-icon']"
           :color="loveWeb"
           x-large
-        >favorite</v-icon>
+        >if if-heart-circle</v-icon>
       </v-btn>
     </div>
   </v-layout>
 </template>
 
 <script>
-import ZeroCard from '../components/ZeroCard'
+import ZeroMore from '../components/ZeroMore'
 
 export default {
   data () {
     return {
-      about: {
-        hitokoto: '简单的网页，数据来自一言网（Hitokoto.cn），使用Vue.js + Vuetify制作，网页背景色取自当前时间值，例如12:34:56时，颜色值为#123456，实时变化',
-        from: '刘亦岳',
-        type: 'z' }
+      aboutData: {
+        title: '关于亦言',
+        from: '程序员',
+        author: '刘亦岳',
+        content: ['一个简单的Web应用',
+          '数据来自一言网（Hitokoto.cn）',
+          '与今日诗词（jinrishici.com）',
+          '使用Vue.js + Vuetify制作',
+          '支持pwa，可以离线运行',
+          '(๑• . •๑)']
+      },
+      poetTextStyle: {
+        display: 'block'
+      },
+      about: true
     }
   },
   components: {
-    ZeroCard
+    ZeroMore
   },
   computed: {
     loveWeb () {
@@ -73,10 +87,47 @@ export default {
     position absolute
     top 50%
     transform translateY(-50%)
+.about-card
+  for i in 1..4
+    @media (min-width: 2**(i+7)px)
+      width: (80/i+10)vw
+      height 65vh
+      position relative
+      opacity 1
+      border-radius 10px
+      overflow hidden
 .btn-box
-  height 150px
+  height 120px
+  display flex
+  align-items center
+  justify-content center
   .btn-like
+    height 44px
+    width 44px
     display block
-    margin 30px auto
-    transition all .3s
+    transition all .5s ease-in-out
+    box-shadow 2px 2px 2px rgba(0, 0, 0, 0.2)
+    &:active
+      animation press 1s ease-in-out
+    .like-icon
+      height 44px
+      width 44px
+      border-radius 100%
+      &.love
+        background #fff
+        animation press 1s ease-in-out
+@keyframes press {
+  0%, 100% {
+    transform scale(1)
+  }
+  20%, 80% {
+    transform scale(1.2)
+  }
+  40%, 60% {
+    transform scale(1.1)
+  }
+  50% {
+    transform scale(1.3)
+  }
+}
 </style>

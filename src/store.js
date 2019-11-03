@@ -9,12 +9,13 @@ export default new Vuex.Store({
     hitokoto: {},
     favorites: [],
     favoritesID: [],
-    favoritesColor: 'white',
     myTitle: '亦言',
-    transform: '',
     loveWeb: false,
-    hexTimer: true,
-    primary: ''
+    primary: '#41555D',
+    colorName: '黯',
+    dataOrigin: 'random',
+    cardMode: 'normal',
+    showTip: true
   },
   mutations: {
     setHitokoto (state, hitokoto) {
@@ -26,23 +27,26 @@ export default new Vuex.Store({
     setFavorites (state, favorites) {
       state.favorites = favorites
     },
-    setFavoritesColor (state, favoritesColor) {
-      state.favoritesColor = favoritesColor
-    },
     setMyTitle (state, myTitle) {
       state.myTitle = myTitle
-    },
-    setTransform (state, transform) {
-      state.transform = transform
     },
     setLoveWeb (state, loveWeb) {
       state.loveWeb = loveWeb
     },
-    setHexTimer (state, hexTimer) {
-      state.hexTimer = hexTimer
-    },
     setPrimary (state, primary) {
       state.primary = primary
+    },
+    setColorName (state, colorName) {
+      state.colorName = colorName
+    },
+    setDataOrigin (state, dataOrigin) {
+      state.dataOrigin = dataOrigin
+    },
+    setCardMode (state, cardMode) {
+      state.cardMode = cardMode
+    },
+    setShowTip (state, showTip) {
+      state.showTip = showTip
     }
   },
   plugins: [createPersiste()]
