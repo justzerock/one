@@ -167,7 +167,7 @@ export default {
     getNewHitokoto () {
       let _this = this
       let hitokoto = {}
-      api.get('http://zerock.top:8999/').then(res => {
+      api.get('https://oneapi.zerock.top').then(res => {
         hitokoto = res
         hitokoto.dataType = 'hito'
         _this.hitokoto = hitokoto
