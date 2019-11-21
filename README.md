@@ -1,29 +1,9 @@
-# zerock
+# one （亦言）
 
-## Project setup
-```
-npm install
-```
+使用 `vue.js` 与 `vuetify` 制作
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+数据来源于 [一言](https://hitokoto.cn) 与 [今日诗词](https://www.jinrishici.com)
 
-### Compiles and minifies for production
-```
-npm run build
-```
+一个简单的web应用，支持pwa，可离线查看收藏内容
 
-### Run your tests
-```
-npm run test
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+收藏的数据以及色彩选项等都存于浏览器本地
